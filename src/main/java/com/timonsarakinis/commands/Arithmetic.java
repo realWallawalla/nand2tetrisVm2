@@ -1,33 +1,21 @@
 package com.timonsarakinis.commands;
 
+import static com.timonsarakinis.commands.CommandType.ARITHMETIC;
+
 public class Arithmetic implements Command {
     private String operation;
-    private String arg1;
-    private int arg2;
 
-    public Arithmetic(String operation, String arg1, int arg2) {
+    public Arithmetic(String operation) {
         this.operation = operation;
-        this.arg1 = arg1;
-        this.arg2 = arg2;
     }
 
     @Override
     public CommandType getCommandType() {
-        return CommandType.ARITHMETIC;
+        return ARITHMETIC;
     }
 
     @Override
-    public String getOperation() {
+    public String getOperator() {
         return operation;
-    }
-
-    @Override
-    public String getSegment() {
-        return arg1;
-    }
-
-    @Override
-    public int getIndex() {
-        return arg2;
     }
 }

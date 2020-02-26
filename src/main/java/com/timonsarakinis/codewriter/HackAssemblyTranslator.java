@@ -1,6 +1,7 @@
 package com.timonsarakinis.codewriter;
 
 import com.timonsarakinis.commands.Command;
+import com.timonsarakinis.commands.stackoperators.StackOperator;
 import com.timonsarakinis.io.FileReaderWriter;
 
 import java.nio.file.Path;
@@ -200,7 +201,7 @@ public class HackAssemblyTranslator {
         output.add("M=!M");
     }
 
-    public void writePush(Command command) {
+    public void writePush(StackOperator command) {
         //write to outputfile the assembly code that implements the given push or pop command
         String vmSegment = segmentPointerMapping.get(command.getSegment());
         int index = command.getIndex();
@@ -253,7 +254,7 @@ public class HackAssemblyTranslator {
         output.add("M=D");
     }
 
-    public void writePop(Command command) {
+    public void writePop(StackOperator command) {
         //write to outputfile the assembly code that implements the given push or pop command
         String vmSegment = segmentPointerMapping.get(command.getSegment());
         int index = command.getIndex();
@@ -301,6 +302,10 @@ public class HackAssemblyTranslator {
                 output.add("M=D");
             }
         }
+    }
+
+    public void writeLabel(Command command) {
+        //todo write assembly code for label
     }
 
     public void close() {

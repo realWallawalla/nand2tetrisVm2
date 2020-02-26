@@ -45,15 +45,7 @@ public class HackVmParser {
         return currentCommand;
     }
 
-    public String operator() {
-        return currentCommand.getOperation();
-    }
-
-    public String arg1() {
-        return currentCommand.getSegment();
-    }
-
-    public int arg2() {
-        return currentCommand.getIndex();
+    public String getOperator() {
+        return currentCommand.getOperator();
     }
 }
