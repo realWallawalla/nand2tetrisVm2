@@ -1,6 +1,7 @@
 package com.timonsarakinis;
 
 import com.timonsarakinis.codewriter.HackAssemblyTranslator;
+import com.timonsarakinis.commands.programflow.ProgramFlow;
 import com.timonsarakinis.commands.stackoperators.StackOperator;
 import com.timonsarakinis.io.FileReaderWriter;
 import com.timonsarakinis.parser.HackVmParser;
@@ -44,7 +45,11 @@ public class Main {
             } else if (parser.commandType() == POP) {
                 translator.writePop((StackOperator) parser.getCurrentCommand());
             } else if (parser.commandType() == LABEL) {
-                translator.writeLabel(parser.getCurrentCommand());
+                translator.writeLabel((ProgramFlow) parser.getCurrentCommand());
+            } else if (parser.commandType() == IF_GOTO) {
+                translator.writeIfGoto((ProgramFlow) parser.getCurrentCommand());
+            } else if (parser.commandType() == GOTO) {
+                translator.writeGoto((ProgramFlow) parser.getCurrentCommand());
             }
         }
         translator.close();

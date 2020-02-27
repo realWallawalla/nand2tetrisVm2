@@ -4,5 +4,7 @@ public enum CommandType {
     ARITHMETIC,
     PUSH,
     POP,
-    LABEL;
+    LABEL,
+    IF_GOTO,
+    GOTO;
 }

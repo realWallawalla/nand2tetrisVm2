@@ -1,6 +1,6 @@
 package com.timonsarakinis.codewriter;
 
-import com.timonsarakinis.commands.Command;
+import com.timonsarakinis.commands.programflow.ProgramFlow;
 import com.timonsarakinis.commands.stackoperators.StackOperator;
 import com.timonsarakinis.io.FileReaderWriter;
 
@@ -32,12 +32,6 @@ public class HackAssemblyTranslator {
     public static final String POINTER = "pointer";
     public static final String TEMP_BASE_ADDRESS = "@5"; //5-12
     public static final int POINT_TO_THIS = 0;
-    /*public static final String GLOBAL_STACK_POINTER_BASE_ADDRESS = "@256";
-    public static final int STATIC_SEGMENT_BASE_ADDRESS = 16; // 16 to 255
-    public static final String LOCAL_BASE_ADDRESS = "@300";
-    public static final String ARG_BASE_ADDRESS = "@400";
-    public static final String THIS_BASE_ADDRESS = "@3030";
-    public static final String THAT_BASE_ADDRESS = "@3040";*/
 
     private static int uniquePrefix;
     private final String fileName;
@@ -49,11 +43,6 @@ public class HackAssemblyTranslator {
         this.fileName = fileName;
         this.outPutPath = FileReaderWriter.getOutputPath(fileName + ".asm");
         segmentPointerMapping = initMapping();
-/*        initSegmentBaseAddress(GLOBAL_STACK_POINTER_BASE_ADDRESS, segmentPointerMapping.get("constant"));
-        initSegmentBaseAddress(LOCAL_BASE_ADDRESS, segmentPointerMapping.get("local"));
-        initSegmentBaseAddress(ARG_BASE_ADDRESS, segmentPointerMapping.get("argument"));
-        initSegmentBaseAddress(THIS_BASE_ADDRESS, segmentPointerMapping.get("this"));
-        initSegmentBaseAddress(THAT_BASE_ADDRESS, segmentPointerMapping.get("that"));*/
     }
 
     private void initSegmentBaseAddress(String baseAddress, String pointer) {
@@ -116,19 +105,19 @@ public class HackAssemblyTranslator {
     private void buildAdd() {
         //pops arguments from stack then push result to stack
         output.add("//ADD");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         output.add("M=M+D");
     }
 
-    private void popTwoFromStack(String vmSegment) {
-        popFromStack(vmSegment);
-        output.add(vmSegment);
+    private void popTwoFromStack() {
+        popFromStack();
+        output.add(SP);
         output.add("M=M-1");
         output.add("A=M");
     }
 
-    private void popFromStack(String stackPointer) {
-        output.add(stackPointer);
+    private void popFromStack() {
+        output.add(SP);
         output.add("M=M-1");
         output.add("A=M");
         output.add("D=M");
@@ -141,19 +130,19 @@ public class HackAssemblyTranslator {
 
     private void buildSub() {
         output.add("//SUB");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         output.add("M=M-D");
     }
 
     private void buildNeg() {
         output.add("//NEG");
-        popFromStack(SP);
+        popFromStack();
         output.add("M=-M");
     }
 
     private void buildEq() {
         output.add("//EQ");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         logicOperationTemplate("IS_EQ" + uniquePrefix, EQUALS.getLogicExpression());
     }
 
@@ -171,25 +160,25 @@ public class HackAssemblyTranslator {
 
     private void buildLessThen() {
         output.add("//LT");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         logicOperationTemplate("IS_LT" + uniquePrefix, LESS_THEN.getLogicExpression());
     }
 
     private void buildGreaterThen() {
         output.add("//GT");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         logicOperationTemplate("IS_GT" + uniquePrefix, GREATER_THEN.getLogicExpression());
     }
 
     private void buildAnd() {
         output.add("//AND");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         output.add("M=M&D");
     }
 
     private void buildOr() {
         output.add("//OR");
-        popTwoFromStack(SP);
+        popTwoFromStack();
         output.add("M=M|D");
     }
 
@@ -209,43 +198,33 @@ public class HackAssemblyTranslator {
         if (vmSegment.equals(SP)) {
             output.add("@" + index);
             output.add("D=A");
-            pushToStack();
-            incrementStackPointer();
         } else if (vmSegment.equals(LCL) || vmSegment.equals(ARG) || vmSegment.equals(THIS) || vmSegment.equals(THAT)) {
             output.add(vmSegment);
             output.add("D=M");
             output.add("@" + index);
             output.add("A=D+A");
             output.add("D=M");
-            pushToStack();
-            incrementStackPointer();
         } else if (vmSegment.equals(STATIC)) {
             output.add("@" + fileName + "." + command.getIndex());
             output.add("D=M");
-            pushToStack();
-            incrementStackPointer();
         } else if (vmSegment.equals(TEMP)) {
             output.add(TEMP_BASE_ADDRESS);
             output.add("D=A");
             output.add("@" + index);
             output.add("A=D+A");
             output.add("D=M");
-            pushToStack();
-            incrementStackPointer();
         }  else if (vmSegment.equals(POINTER)) {
             if (index == POINT_TO_THIS) {
                 output.add(THIS);
                 output.add("D=M");
-                pushToStack();
-                incrementStackPointer();
             } else {
                 //point to that
                 output.add(THAT);
                 output.add("D=M");
-                pushToStack();
-                incrementStackPointer();
             }
         }
+        pushToStack();
+        incrementStackPointer();
     }
 
     private void pushToStack() {
@@ -260,7 +239,7 @@ public class HackAssemblyTranslator {
         int index = command.getIndex();
         output.add("//POP");
         if (vmSegment.equals(SP)) {
-            popFromStack(SP);
+            popFromStack();
             output.add(System.lineSeparator());
         } else if (vmSegment.equals(LCL) || vmSegment.equals(ARG) || vmSegment.equals(THIS) || vmSegment.equals(THAT)) {
             output.add(vmSegment);
@@ -269,12 +248,12 @@ public class HackAssemblyTranslator {
             output.add("D=D+A"); //sum of segment base and index
             output.add("@R13");
             output.add("M=D"); // save address to temp ram-address
-            popFromStack(SP);
+            popFromStack();
             output.add("@R13");
             output.add("A=M"); //set address to segment-address
             output.add("M=D" + System.lineSeparator()); //save value from stack to segment-address
         } else if (vmSegment.equals(STATIC)) {
-            popFromStack(SP);
+            popFromStack();
             output.add("@" + fileName + "." + index);
             output.add("M=D");
         } else if (vmSegment.equals(TEMP)) {
@@ -284,19 +263,19 @@ public class HackAssemblyTranslator {
             output.add("D=D+A");
             output.add("@R13");
             output.add("M=D");
-            popFromStack(SP);
+            popFromStack();
             output.add("@R13");
             output.add("A=M");
             output.add("M=D" + System.lineSeparator());
         } else if (vmSegment.equals(POINTER)) {
             if (index == POINT_TO_THIS) {
-                popFromStack(SP);
+                popFromStack();
                 output.add(THIS);
                 output.add("A=M");
                 output.add("M=D");
             } else {
                 //point to that
-                popFromStack(SP);
+                popFromStack();
                 output.add(THAT);
                 output.add("A=M");
                 output.add("M=D");
@@ -304,8 +283,22 @@ public class HackAssemblyTranslator {
         }
     }
 
-    public void writeLabel(Command command) {
-        //todo write assembly code for label
+    public void writeLabel(ProgramFlow command) {
+        output.add("(" + command.getVariabelName() + ")");
+        output.add(System.lineSeparator());
+    }
+
+    public void writeIfGoto(ProgramFlow command) {
+        popFromStack();
+        output.add("@"+command.getVariabelName());
+        output.add(NOT_EQUAL.getLogicExpression());
+        output.add(System.lineSeparator());
+    }
+
+    public void writeGoto(ProgramFlow command) {
+        output.add("@" + command.getVariabelName());
+        output.add(JUMP.getLogicExpression());
+        output.add(System.lineSeparator());
     }
 
     public void close() {
