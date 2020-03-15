@@ -4,7 +4,7 @@ import com.timonsarakinis.commands.CommandType;
 
 import static com.timonsarakinis.commands.CommandType.GOTO;
 
-public class Goto implements ProgramFlow {
+public class Goto implements BranchingCommand {
     private String operator;
     private String variabelName;
 

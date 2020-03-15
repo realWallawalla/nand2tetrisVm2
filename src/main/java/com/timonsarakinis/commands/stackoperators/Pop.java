@@ -4,7 +4,7 @@ import com.timonsarakinis.commands.CommandType;
 
 import static com.timonsarakinis.commands.CommandType.POP;
 
-public class Pop implements StackOperator {
+public class Pop implements StackCommand {
     private String operator;
     private String segment;
     private int index;

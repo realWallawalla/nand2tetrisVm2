@@ -1,11 +1,10 @@
 package com.timonsarakinis.commands.programflow;
 
-import com.timonsarakinis.commands.Command;
 import com.timonsarakinis.commands.CommandType;
 
 import static com.timonsarakinis.commands.CommandType.IF_GOTO;
 
-public class IfGoto implements ProgramFlow {
+public class IfGoto implements BranchingCommand {
     private String operator;
     private String variabelName;
 

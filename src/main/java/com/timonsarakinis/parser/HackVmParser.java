@@ -5,6 +5,7 @@ import com.timonsarakinis.commands.Command;
 import com.timonsarakinis.commands.CommandFactory;
 import com.timonsarakinis.commands.CommandType;
 import com.timonsarakinis.io.FileReaderWriter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -28,12 +29,16 @@ public class HackVmParser {
     }
 
     public void advance() {
-        String next = iterator.next();
+        String next = StringUtils.replaceIgnoreCase(iterator.next(), "\t", " ");
+
         List<String> resultList = Splitter.on(" ")
                 .trimResults()
                 .omitEmptyStrings()
                 .splitToList(next);
 
+        if (resultList.lastIndexOf("//") > 0) {
+            resultList = resultList.subList(0, resultList.lastIndexOf("//"));
+        }
         this.currentCommand = CommandFactory.createCommand(resultList);
     }
 

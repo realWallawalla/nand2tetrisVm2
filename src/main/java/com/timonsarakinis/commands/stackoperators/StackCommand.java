@@ -2,7 +2,7 @@ package com.timonsarakinis.commands.stackoperators;
 
 import com.timonsarakinis.commands.Command;
 
-public interface StackOperator extends Command {
+public interface StackCommand extends Command {
     String getSegment();
 
     int getIndex();

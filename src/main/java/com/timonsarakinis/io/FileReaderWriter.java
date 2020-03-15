@@ -46,10 +46,9 @@ public class FileReaderWriter {
         return new ArrayList<>();
     }
 
-    public static void writeToFile(byte[] line, Path path) {
+    public static void writeToFile(byte[] line) {
         try {
-            Files.write(path, line, CREATE, APPEND);
-            System.out.println("Successfully written line to output file");
+            Files.write(getOutputPath(), line, CREATE, APPEND);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -66,8 +65,8 @@ public class FileReaderWriter {
         }
     }
 
-        public static Path getOutputPath(String fileName) {
-            Path path = Paths.get(DIR_PATH + fileName);
+        public static Path getOutputPath() {
+            Path path = Paths.get(DIR_PATH + "output.asm");
             if (Files.exists(path)) {
                 try {
                     Files.delete(path);

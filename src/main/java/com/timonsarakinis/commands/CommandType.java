@@ -6,5 +6,8 @@ public enum CommandType {
     POP,
     LABEL,
     IF_GOTO,
-    GOTO;
+    GOTO,
+    CALL,
+    FUNCTION,
+    RETURN;
 }

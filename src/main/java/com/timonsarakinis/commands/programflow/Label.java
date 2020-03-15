@@ -1,11 +1,10 @@
 package com.timonsarakinis.commands.programflow;
 
-import com.timonsarakinis.commands.Command;
 import com.timonsarakinis.commands.CommandType;
 
 import static com.timonsarakinis.commands.CommandType.LABEL;
 
-public class Label implements ProgramFlow {
+public class Label implements BranchingCommand {
     private String operator;
     private String variabelName;
 

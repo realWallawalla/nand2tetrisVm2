@@ -5,7 +5,7 @@ import com.timonsarakinis.commands.CommandType;
 
 import static com.timonsarakinis.commands.CommandType.PUSH;
 
-public class Push implements Command, StackOperator {
+public class Push implements Command, StackCommand {
     private String operation;
     private String segment;
     private int index;
