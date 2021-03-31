@@ -13,7 +13,7 @@
         <junit-jupiter-api.version>5.3.2</junit-jupiter-api.version>
         <assertj-core.version>3.14.0</assertj-core.version>
         <commons-lang3.version>3.9</commons-lang3.version>
-        <guava.version>28.1-jre</guava.version>
+        <guava.version>29.0-jre</guava.version>
     </properties>
 
     <dependencies>
